@@ -1,0 +1,9 @@
+Thumbs.db
+.DS_Store
+.idea
+_notes
+._*
+node_modules/
+vendor/
+dist/
+.env

@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: ./docker/PHP.Dockerfile
+    volumes:
+      - ./:/var/www/html:cached
+      - ./docker/php.ini:/usr/local/etc/php/conf.d/docker-php.ini
