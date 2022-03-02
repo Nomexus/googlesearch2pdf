@@ -3,7 +3,5 @@ Thumbs.db
 .idea
 _notes
 ._*
-node_modules/
 vendor/
-dist/
-.env
+output
