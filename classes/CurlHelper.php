@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-class Curl {
+class CurlHelper {
     /**
      * helper function to quickly retrieve the html of a page
      *

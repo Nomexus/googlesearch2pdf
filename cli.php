@@ -1,20 +1,25 @@
 <?php declare(strict_types=1);
 
-use Mpdf\Config\ConfigVariables;
-use Mpdf\Config\FontVariables;
-use Mpdf\HTMLParserMode;
-use Mpdf\Mpdf;
-use Mpdf\MpdfException;
-use Mpdf\Output\Destination;
-
 require_once "vendor/autoload.php";
-require_once "classes/Curl.php";
+require_once "classes/CurlHelper.php";
 require_once "classes/GoogleResultsParser.php";
+require_once "classes/PdfHelper.php";
 
-$outputDir   = "output";
-$url         = "https://www.google.de/search?q=";
-$searchParam = "test";
-$quantity    = 15;
+if ( ! isset($argv[1]) || ! isset($argv[2])) {
+    print "Please provide at least two parameters: searchParam and quantity".PHP_EOL;
+    exit;
+}
+
+$searchParam = $argv[1];
+$quantity    = $argv[2];
+
+if ( ! is_numeric($quantity) || $quantity <= 0) {
+    print "The quantity parameter must be greater than 0".PHP_EOL;
+    exit;
+}
+
+$outputDir = "output";
+$url       = "https://www.google.de/search?q=";
 
 if ( ! is_dir($outputDir)) {
     mkdir($outputDir, 755);
@@ -26,7 +31,7 @@ while (count($results) < $quantity) {
     $queryUrl = $url.urlencode($searchParam)."&start=".($currentPage * 10 - 10);
     print "Querying: ".$queryUrl.PHP_EOL;
 
-    $html = Curl::getHtmlResult($queryUrl);
+    $html = CurlHelper::getHtmlResult($queryUrl);
     if ( ! $html) {
         print "An error querying $queryUrl occured".PHP_EOL;
         break;
@@ -42,4 +47,21 @@ while (count($results) < $quantity) {
 
     $results = array_merge($results, $parserResults);
     $currentPage++;
+}
+
+if (count($results) > 0) {
+    $resultHtml = "";
+    foreach ($results as $result) {
+        $resultHtml .= PdfHelper::resultToHtml($result);
+    }
+
+    $replaces = [
+        "searchParam" => $searchParam,
+        "results"     => $resultHtml,
+    ];
+
+    PdfHelper::googleResultsToPdf(
+        $outputDir,
+        $replaces
+    );
 }

@@ -28,7 +28,7 @@ class GoogleResultsParser
             foreach ($elements as $element) {
                 $result = $this->getSearchResult($element);
 
-                if(!$result) {
+                if ( ! $result) {
                     continue;
                 }
 
